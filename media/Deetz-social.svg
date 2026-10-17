@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640" role="img" aria-labelledby="title desc">
+	<title id="title">Deetz: Tier Zero</title>
+	<desc id="desc">TIER in white block letters beside a gold triangle, the symbol for an Active Directory domain, holding a zero. Below, the name Deetz and its purpose.</desc>
+	<rect width="1280" height="640" fill="#0d1b2a"/>
+	<g transform="translate(215,192) scale(0.82)">
+	<g fill="#f4f6f8">
+		<rect x="0" y="0" width="160" height="50"/>
+		<rect x="55" y="0" width="50" height="200"/>
+		<rect x="190" y="0" width="50" height="200"/>
+		<rect x="270" y="0" width="50" height="200"/>
+		<rect x="270" y="0" width="130" height="50"/>
+		<rect x="270" y="75" width="110" height="50"/>
+		<rect x="270" y="150" width="130" height="50"/>
+		<rect x="430" y="0" width="50" height="200"/>
+		<path fill-rule="evenodd" d="M430,0 H525 A50,50 0 0 1 575,50 V75 A50,50 0 0 1 525,125 H430 Z M480,50 H525 V75 H480 Z"/>
+		<path d="M480,100 H535 L575,200 H520 Z"/>
+	</g>
+	<path d="M835,-110 L1028,225 L642,225 Z" fill="#f5b700" stroke="#f5b700" stroke-width="16" stroke-linejoin="round"/>
+	<path fill-rule="evenodd" fill="#0d1b2a" d="M765,70 A70,70 0 0 1 905,70 V130 A70,70 0 0 1 765,130 Z M815,70 A20,20 0 0 1 855,70 V130 A20,20 0 0 1 815,130 Z"/>
+	</g>
+	<rect x="215" y="420" width="850" height="6" fill="#f5b700"/>
+	<text x="640" y="505" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-weight="600" font-size="64" fill="#f4f6f8">Deetz</text>
+	<text x="640" y="562" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="30" fill="#9fb3c8">Enumerate Active Directory Tier Zero accounts for PAM coverage</text>
+</svg>

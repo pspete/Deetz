@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+	<ViewDefinitions>
+		<View>
+			<Name>Deetz.TierZeroAccount</Name>
+			<ViewSelectedBy>
+				<TypeName>Deetz.TierZeroAccount</TypeName>
+			</ViewSelectedBy>
+			<TableControl>
+				<TableHeaders>
+					<TableColumnHeader />
+					<TableColumnHeader />
+					<TableColumnHeader />
+					<TableColumnHeader />
+					<TableColumnHeader />
+					<TableColumnHeader>
+						<Label>Reason</Label>
+					</TableColumnHeader>
+				</TableHeaders>
+				<TableRowEntries>
+					<TableRowEntry>
+						<TableColumnItems>
+							<TableColumnItem>
+								<PropertyName>SamAccountName</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Domain</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>ObjectClass</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Enabled</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>TierZeroGroup</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<ScriptBlock>($PSItem.Reason | Group-Object -Property Source | ForEach-Object { "$($PSItem.Name) ($($PSItem.Count))" }) -join ', '</ScriptBlock>
+							</TableColumnItem>
+						</TableColumnItems>
+					</TableRowEntry>
+				</TableRowEntries>
+			</TableControl>
+		</View>
+		<View>
+			<Name>Deetz.TierZeroReason</Name>
+			<ViewSelectedBy>
+				<TypeName>Deetz.TierZeroReason</TypeName>
+			</ViewSelectedBy>
+			<TableControl>
+				<TableHeaders>
+					<TableColumnHeader />
+					<TableColumnHeader>
+						<Label>Path</Label>
+					</TableColumnHeader>
+					<TableColumnHeader />
+					<TableColumnHeader />
+					<TableColumnHeader />
+				</TableHeaders>
+				<TableRowEntries>
+					<TableRowEntry>
+						<TableColumnItems>
+							<TableColumnItem>
+								<PropertyName>Source</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<ScriptBlock>$PSItem.Path -join ' &gt; '</ScriptBlock>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Right</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>ObjectType</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Target</PropertyName>
+							</TableColumnItem>
+						</TableColumnItems>
+					</TableRowEntry>
+				</TableRowEntries>
+			</TableControl>
+		</View>
+	</ViewDefinitions>
+</Configuration>

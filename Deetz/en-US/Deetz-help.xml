@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="utf-8"?>
+<helpItems xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:maml="http://schemas.microsoft.com/maml/2004/10" schema="maml" xmlns="http://msh">
+  <command:command>
+    <command:details>
+      <command:name>Compare-TierZeroAccount</command:name>
+      <maml:description>
+        <maml:para>Marks which Tier Zero accounts are held in a PAM tool</maml:para>
+      </maml:description>
+      <command:verb>Compare</command:verb>
+      <command:noun>TierZeroAccount</command:noun>
+    </command:details>
+    <maml:description>
+      <maml:para>Adds an InPAM property to each Tier Zero account, set to True where a PAM account matches it.
+
+A PAM account matches when its user name and address match the SamAccountName and the DNS or NetBIOS domain name of the Tier Zero account.
+A user name in DOMAIN\user or user@domain form matches on the domain in the user name, whatever the address.
+A user name in user@domain form also matches the UserPrincipalName of the Tier Zero account.
+Matching is case insensitive.
+
+PAM accounts can come from any source, such as a CSV export or the psPAS Get-PASAccount command.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Compare-TierZeroAccount</maml:name>
+        <command:parameter pipelineInput="false" position="0" aliases="none" required="true" variableLength="false" globbing="false">
+          <maml:name>InputObject</maml:name>
+          <maml:description />
+          <command:parameterValue required="true" variableLength="false">PSObject</command:parameterValue>
+          <dev:type>
+            <maml:name>PSObject</maml:name>
+          </dev:type>
+        </command:parameter>
+        <command:parameter pipelineInput="false" position="1" aliases="none" required="true" variableLength="false" globbing="false">
+          <maml:name>PAMAccount</maml:name>
+          <maml:description />
+          <command:parameterValue required="true" variableLength="false">PSObject[]</command:parameterValue>
+          <dev:type>
+            <maml:name>PSObject[]</maml:name>
+          </dev:type>
+        </command:parameter>
+        <command:parameter pipelineInput="false" position="2" aliases="none" required="false" variableLength="false" globbing="false">
+          <maml:name>UserNameProperty</maml:name>
+          <maml:description />
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+          </dev:type>
+        </command:parameter>
+        <command:parameter pipelineInput="false" position="3" aliases="none" required="false" variableLength="false" globbing="false">
+          <maml:name>AddressProperty</maml:name>
+          <maml:description />
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+          </dev:type>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter pipelineInput="false" position="3" aliases="none" required="false" variableLength="false" globbing="false">
+        <maml:name>AddressProperty</maml:name>
+        <maml:description>
+          <maml:para>Name of the PAM account property holding the domain of the account.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="true">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+        </dev:type>
+      </command:parameter>
+      <command:parameter pipelineInput="true (ByValue)" position="0" aliases="none" required="true" variableLength="false" globbing="false">
+        <maml:name>InputObject</maml:name>
+        <maml:description>
+          <maml:para>Tier Zero account, as output by Get-TierZeroAccount or read from a CSV file it was exported to.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="true">PSObject</command:parameterValue>
+        <dev:type>
+          <maml:name>PSObject</maml:name>
+        </dev:type>
+      </command:parameter>
+      <command:parameter pipelineInput="false" position="1" aliases="none" required="true" variableLength="false" globbing="false">
+        <maml:name>PAMAccount</maml:name>
+        <maml:description>
+          <maml:para>Accounts held in the PAM tool.
+An empty list marks every account as not held.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="true">PSObject[]</command:parameterValue>
+        <dev:type>
+          <maml:name>PSObject[]</maml:name>
+        </dev:type>
+      </command:parameter>
+      <command:parameter pipelineInput="false" position="2" aliases="none" required="false" variableLength="false" globbing="false">
+        <maml:name>UserNameProperty</maml:name>
+        <maml:description>
+          <maml:para>Name of the PAM account property holding the user name of the account.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="true">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+        </dev:type>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.Management.Automation.PSObject</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para />
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.PSObject</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para />
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>The input objects are returned with the InPAM property added, replacing any existing InPAM property.
+
+The defaults for -UserNameProperty and -AddressProperty match the account objects returned by psPAS.</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>--------- Example 1 ---------</maml:title>
+        <maml:introduction>
+          <maml:para>```
+PS C:\&gt; $PAMAccounts = Get-PASAccount
+PS C:\&gt; Get-TierZeroAccount | Compare-TierZeroAccount -PAMAccount $PAMAccounts | Where-Object { -not $_.InPAM }
+```</maml:para>
+          <maml:para>&#x80;</maml:para>
+          <maml:para>Lists the Tier Zero accounts not held in CyberArk, using psPAS</maml:para>
+        </maml:introduction>
+        <dev:code />
+        <dev:remarks />
+      </command:example>
+      <command:example>
+        <maml:title>--------- Example 2 ---------</maml:title>
+        <maml:introduction>
+          <maml:para>```
+PS C:\&gt; $PAMAccounts = Import-Csv -Path .\PAMExport.csv
+PS C:\&gt; Get-TierZeroAccount | Compare-TierZeroAccount -PAMAccount $PAMAccounts -UserNameProperty Account -AddressProperty Domain | Export-Csv -Path .\Coverage.csv -NoTypeInformation
+```</maml:para>
+          <maml:para>&#x80;</maml:para>
+          <maml:para>Writes the PAM coverage of each Tier Zero account to a CSV file, matching against an export with Account and Domain columns</maml:para>
+        </maml:introduction>
+        <dev:code />
+        <dev:remarks />
+      </command:example>
+      <command:example>
+        <maml:title>--------- Example 3 ---------</maml:title>
+        <maml:introduction>
+          <maml:para>```
+PS C:\&gt; Import-Csv -Path .\TierZero.csv | Compare-TierZeroAccount -PAMAccount $PAMAccounts
+```</maml:para>
+          <maml:para>&#x80;</maml:para>
+          <maml:para>Checks a previously saved Tier Zero account list</maml:para>
+        </maml:introduction>
+        <dev:code />
+        <dev:remarks />
+      </command:example>
+    </command:examples>
+    <command:relatedLinks />
+  </command:command>
+  <command:command>
+    <command:details>
+      <command:name>ConvertTo-PAMAccount</command:name>
+      <maml:description>
+        <maml:para>Formats Tier Zero accounts for onboarding to a PAM tool</maml:para>
+      </maml:description>
+      <command:verb>ConvertTo</command:verb>
+      <command:noun>PAMAccount</command:noun>
+    </command:details>
+    <maml:description>
+      <maml:para>Outputs an onboarding record for each Tier Zero user account, with userName, address, platformID and SafeName properties.
+
+The output can be exported to CSV for bulk onboarding, or piped to the psPAS Add-PASAccount command.
+
+Accounts which are not user objects, such as computers, managed service accounts and foreign security principals, are skipped.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>ConvertTo-PAMAccount</maml:name>
+        <command:parameter pipelineInput="false" position="0" aliases="none" required="true" variableLength="false" globbing="false">
+          <maml:name>SamAccountName</maml:name>
+          <maml:description />
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+          </dev:type>
+        </command:parameter>
+        <command:parameter pipelineInput="false" position="1" aliases="none" required="true" variableLength="false" globbing="false">
+          <maml:name>Domain</maml:name>
+          <maml:description />
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+          </dev:type>
+        </command:parameter>
+        <command:parameter pipelineInput="false" position="2" aliases="none" required="true" variableLength="false" globbing="false">
+          <maml:name>ObjectClass</maml:name>
+          <maml:description />
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+          </dev:type>
+        </command:parameter>
+        <command:parameter pipelineInput="false" position="3" aliases="none" required="true" variableLength="false" globbing="false">
+          <maml:name>SafeName</maml:name>
+          <maml:description />
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+          </dev:type>
+        </command:parameter>
+        <command:parameter pipelineInput="false" position="4" aliases="none" required="true" variableLength="false" globbing="false">
+          <maml:name>PlatformID</maml:name>
+          <maml:description />
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+          </dev:type>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter pipelineInput="true (ByPropertyName)" position="1" aliases="none" required="true" variableLength="false" globbing="false">
+        <maml:name>Domain</maml:name>
+        <maml:description>
+          <maml:para>DNS domain name of the account, used as the address.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="true">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+        </dev:type>
+      </command:parameter>
+      <command:parameter pipelineInput="true (ByPropertyName)" position="2" aliases="none" required="true" variableLength="false" globbing="false">
+        <maml:name>ObjectClass</maml:name>
+        <maml:description>
+          <maml:para>Directory object class of the account.
+Only user accounts are output.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="true">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+        </dev:type>
+      </command:parameter>
+      <command:parameter pipelineInput="false" position="4" aliases="none" required="true" variableLength="false" globbing="false">
+        <maml:name>PlatformID</maml:name>
+        <maml:description>
+          <maml:para>ID of the PAM platform to assign to the accounts.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="true">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+        </dev:type>
+      </command:parameter>
+      <command:parameter pipelineInput="false" position="3" aliases="none" required="true" variableLength="false" globbing="false">
+        <maml:name>SafeName</maml:name>
+        <maml:description>
+          <maml:para>Name of the safe to onboard the accounts to.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="true">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+        </dev:type>
+      </command:parameter>
+      <command:parameter pipelineInput="true (ByPropertyName)" position="0" aliases="none" required="true" variableLength="false" globbing="false">
+        <maml:name>SamAccountName</maml:name>
+        <maml:description>
+          <maml:para>Logon name of the account, used as the user name.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="true">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+        </dev:type>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para />
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.PSObject</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para />
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>No password is set; the PAM tool must reconcile or change the password after onboarding.
+
+The built-in krbtgt accounts are user accounts and are output; exclude them where the PAM tool should not manage them.</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>--------- Example 1 ---------</maml:title>
+        <maml:introduction>
+          <maml:para>```
+PS C:\&gt; Get-TierZeroAccount | ConvertTo-PAMAccount -SafeName T0-Accounts -PlatformID WinDomain | Export-Csv -Path .\Onboard.csv -NoTypeInformation
+```</maml:para>
+          <maml:para>&#x80;</maml:para>
+          <maml:para>Writes an onboarding file for every Tier Zero user account</maml:para>
+        </maml:introduction>
+        <dev:code />
+        <dev:remarks />
+      </command:example>
+      <command:example>
+        <maml:title>--------- Example 2 ---------</maml:title>
+        <maml:introduction>
+          <maml:para>```
+PS C:\&gt; Get-TierZeroAccount | Compare-TierZeroAccount -PAMAccount (Get-PASAccount) |
+    Where-Object { -not $_.InPAM -and $_.Enabled } |
+    ConvertTo-PAMAccount -SafeName T0-Accounts -PlatformID WinDomain |
+    Add-PASAccount
+```</maml:para>
+          <maml:para>&#x80;</maml:para>
+          <maml:para>Onboards every enabled Tier Zero user account not already held in CyberArk, using psPAS</maml:para>
+        </maml:introduction>
+        <dev:code />
+        <dev:remarks />
+      </command:example>
+    </command:examples>
+    <command:relatedLinks />
+  </command:command>
+  <command:command>
+    <command:details>
+      <command:name>ConvertTo-TierZeroReport</command:name>
+      <maml:description>
+        <maml:para>Outputs one row per Tier Zero account per reason</maml:para>
+      </maml:description>
+      <command:verb>ConvertTo</command:verb>
+      <command:noun>TierZeroReport</command:noun>
+    </command:details>
+    <maml:description>
+      <maml:para>Flattens Tier Zero accounts into one row for each reason the account was found, for CSV export or review in a spreadsheet.
+
+Each row holds the properties of the account, with multi-valued properties joined by '; ', followed by the Source, TierZeroGroup, Path, Right, ObjectType and Target of the reason.
+Path is the chain of groups joined by ' &gt; '.
+
+Properties added to the account by other commands, such as InPAM from Compare-TierZeroAccount, are kept.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>ConvertTo-TierZeroReport</maml:name>
+        <command:parameter pipelineInput="true (ByValue)" position="0" aliases="none" required="true" variableLength="false" globbing="false">
+          <maml:name>InputObject</maml:name>
+          <maml:description />
+          <command:parameterValue required="true" variableLength="false">PSObject</command:parameterValue>
+          <dev:type>
+            <maml:name>PSObject</maml:name>
+          </dev:type>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter pipelineInput="true (ByValue)" position="0" aliases="none" required="true" variableLength="false" globbing="false">
+        <maml:name>InputObject</maml:name>
+        <maml:description>
+          <maml:para>A Tier Zero account, as output by Get-TierZeroAccount.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="true">PSObject</command:parameterValue>
+        <dev:type>
+          <maml:name>PSObject</maml:name>
+        </dev:type>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>Deetz.TierZeroAccount</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para />
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.PSObject</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para />
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para />
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>--------- Example 1 ---------</maml:title>
+        <maml:introduction>
+          <maml:para>```
+PS C:\&gt; Get-TierZeroAccount | ConvertTo-TierZeroReport | Export-Csv -Path .\TierZero.csv -NoTypeInformation
+```</maml:para>
+          <maml:para>&#x80;</maml:para>
+          <maml:para>Writes every Tier Zero account, and every reason each was found, to a CSV file</maml:para>
+        </maml:introduction>
+        <dev:code />
+        <dev:remarks />
+      </command:example>
+      <command:example>
+        <maml:title>--------- Example 2 ---------</maml:title>
+        <maml:introduction>
+          <maml:para>```
+PS C:\&gt; Get-TierZeroAccount | Compare-TierZeroAccount -PAMAccount (Get-PASAccount) | ConvertTo-TierZeroReport | Export-Csv -Path .\Coverage.csv -NoTypeInformation
+```</maml:para>
+          <maml:para>&#x80;</maml:para>
+          <maml:para>Writes the Tier Zero accounts, their reasons and whether each is held in CyberArk to a CSV file</maml:para>
+        </maml:introduction>
+        <dev:code />
+        <dev:remarks />
+      </command:example>
+    </command:examples>
+    <command:relatedLinks />
+  </command:command>
+  <command:command>
+    <command:details>
+      <command:name>Get-TierZeroAccount</command:name>
+      <maml:description>
+        <maml:para>Lists the Tier Zero accounts of an Active Directory domain</maml:para>
+      </maml:description>
+      <command:verb>Get</command:verb>
+      <command:noun>TierZeroAccount</command:noun>
+    </command:details>
+    <maml:description>
+      <maml:para>Lists every account with Tier Zero access to a domain, with the reasons it was found.
+
+Accounts are found three ways:
+
+- GroupMembership: direct, nested and primary group members of the default Tier Zero groups and of any additional groups.
+The default groups are those rated Tier Zero by the SpecterOps Tier Zero Table (https://specterops.github.io/TierZeroTable/) which can be identified by SID: Administrators, Account Operators, Server Operators, Print Operators, Backup Operators, Incoming Forest Trust Builders, Performance Log Users, Distributed COM Users, Cryptographic Operators, Domain Admins, Domain Controllers, Cert Publishers, Key Admins, plus the forest root groups Enterprise Admins, Schema Admins and Enterprise Key Admins.
+- WellKnownAccount: the built-in Administrator account, the krbtgt accounts, and read-only domain controller computer accounts.
+- ContainerACL: principals granted control (GenericAll, GenericWrite, WriteDacl, WriteOwner, or a write or extended right which allows takeover) of the domain root, CN=Users, AdminSDHolder, the Domain Controllers OU, and every container holding a Tier Zero account or group.
+- ObjectACL: principals granted the same control of a Tier Zero account or group object itself, by an entry set on the object or by owning it, and the managedBy principal of a read-only domain controller.
+Owners are treated as having full control, as an owner can always change the permissions.
+Groups found by ContainerACL or ObjectACL are expanded, and the accounts and groups found are checked in turn until no new principal is found.
+
+Each account is listed once, with a Reason property holding a Deetz.TierZeroReason object for every way it was found:
+
+- Source: GroupMembership, WellKnownAccount, ContainerACL or ObjectACL.
+- TierZeroGroup: the Tier Zero group, or the group granted a right, through which the account was found.
+- Path: the chain of groups from TierZeroGroup down to the group holding the account.
+- Right and ObjectType: the right held, such as GenericAll (All), WriteProperty (member), Owner (All) or managedBy.
+- Target: the container or object the right is held over.
+
+The Source and TierZeroGroup properties of the account list the distinct values of its reasons.
+The table view summarises the reasons by source, such as GroupMembership (2), ObjectACL (1).
+Use ConvertTo-TierZeroReport to output one row per account per reason, for CSV export.
+Groups are not listed; their members are.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-TierZeroAccount</maml:name>
+        <command:parameter pipelineInput="false" position="0" aliases="none" required="false" variableLength="false" globbing="false">
+          <maml:name>Domain</maml:name>
+          <maml:description />
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+          </dev:type>
+        </command:parameter>
+        <command:parameter pipelineInput="false" position="1" aliases="none" required="false" variableLength="false" globbing="false">
+          <maml:name>Credential</maml:name>
+          <maml:description />
+          <command:parameterValue required="true" variableLength="false">PSCredential</command:parameterValue>
+          <dev:type>
+            <maml:name>PSCredential</maml:name>
+          </dev:type>
+        </command:parameter>
+        <command:parameter pipelineInput="false" position="2" aliases="none" required="false" variableLength="false" globbing="false">
+          <maml:name>AdditionalGroup</maml:name>
+          <maml:description />
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+          </dev:type>
+        </command:parameter>
+        <command:parameter pipelineInput="false" position="named" aliases="none" required="false" variableLength="false" globbing="false">
+          <maml:name>SkipAclAnalysis</maml:name>
+          <maml:description />
+          <dev:type>
+            <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+          </dev:type>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter pipelineInput="false" position="2" aliases="none" required="false" variableLength="false" globbing="false">
+        <maml:name>AdditionalGroup</maml:name>
+        <maml:description>
+          <maml:para>Names of further groups whose members are Tier Zero, such as DnsAdmins or groups which administer Tier Zero systems.
+Accepts any identity Get-ADGroup accepts in the target domain.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+        </dev:type>
+      </command:parameter>
+      <command:parameter pipelineInput="false" position="1" aliases="none" required="false" variableLength="false" globbing="false">
+        <maml:name>Credential</maml:name>
+        <maml:description>
+          <maml:para>Credential used for all directory queries.
+Defaults to the current user.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="true">PSCredential</command:parameterValue>
+        <dev:type>
+          <maml:name>PSCredential</maml:name>
+        </dev:type>
+      </command:parameter>
+      <command:parameter pipelineInput="false" position="0" aliases="none" required="false" variableLength="false" globbing="false">
+        <maml:name>Domain</maml:name>
+        <maml:description>
+          <maml:para>DNS name of the domain to check.
+Defaults to the domain of the current computer.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="true">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+        </dev:type>
+      </command:parameter>
+      <command:parameter pipelineInput="false" position="Named" aliases="none" required="false" variableLength="false" globbing="false">
+        <maml:name>SkipAclAnalysis</maml:name>
+        <maml:description>
+          <maml:para>Find accounts by group membership and well known account only, without reading container or object security descriptors.</maml:para>
+        </maml:description>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+        </dev:type>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para />
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Deetz.TierZeroAccount</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para />
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>Requires the ActiveDirectory module and read access to the domains of the forest.
+
+Forest level groups are read from the forest root domain.
+A forest domain which cannot be queried is reported with a warning, and principals from it are not resolved.
+
+Everyone, Anonymous Logon, Authenticated Users, Domain Users, Domain Computers, Users, Guests and Pre-Windows 2000 Compatible Access are not expanded when found in an ACL; a warning is written instead, since every account would be Tier Zero.
+
+Only entries set directly on a Tier Zero account or group object are reported as ObjectACL; inherited entries are found through the container they are set on.
+The ACLs of Group Policy objects are not analysed.
+Access control entries scoped to a specific child object type are treated as applying to all objects.
+
+Foreign security principals are listed, translated to DOMAIN\name where the SID resolves.
+Foreign security principals for groups in a trusted domain are expanded in that domain where it can be read.</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>--------- Example 1 ---------</maml:title>
+        <maml:introduction>
+          <maml:para>```
+PS C:\&gt; Get-TierZeroAccount
+```</maml:para>
+          <maml:para>&#x80;</maml:para>
+          <maml:para>Lists the Tier Zero accounts of the current domain</maml:para>
+        </maml:introduction>
+        <dev:code />
+        <dev:remarks />
+      </command:example>
+      <command:example>
+        <maml:title>--------- Example 2 ---------</maml:title>
+        <maml:introduction>
+          <maml:para>```
+PS C:\&gt; Get-TierZeroAccount -Domain child.corp.local -Credential (Get-Credential) | ConvertTo-TierZeroReport | Export-Csv -Path .\TierZero.csv -NoTypeInformation
+```</maml:para>
+          <maml:para>&#x80;</maml:para>
+          <maml:para>Writes the Tier Zero accounts of the child.corp.local domain, and every reason each was found, to a CSV file</maml:para>
+        </maml:introduction>
+        <dev:code />
+        <dev:remarks />
+      </command:example>
+      <command:example>
+        <maml:title>--------- Example 3 ---------</maml:title>
+        <maml:introduction>
+          <maml:para>```
+PS C:\&gt; Get-TierZeroAccount -AdditionalGroup DnsAdmins, 'Exchange Trusted Subsystem'
+```</maml:para>
+          <maml:para>&#x80;</maml:para>
+          <maml:para>Lists the Tier Zero accounts of the current domain, treating members of DnsAdmins and Exchange Trusted Subsystem as Tier Zero</maml:para>
+        </maml:introduction>
+        <dev:code />
+        <dev:remarks />
+      </command:example>
+      <command:example>
+        <maml:title>--------- Example 4 ---------</maml:title>
+        <maml:introduction>
+          <maml:para>```
+PS C:\&gt; Get-TierZeroAccount -SkipAclAnalysis -Verbose
+```</maml:para>
+          <maml:para>&#x80;</maml:para>
+          <maml:para>Lists the Tier Zero accounts found by group membership only, reporting each group as it is checked</maml:para>
+        </maml:introduction>
+        <dev:code />
+        <dev:remarks />
+      </command:example>
+      <command:example>
+        <maml:title>--------- Example 5 ---------</maml:title>
+        <maml:introduction>
+          <maml:para>```
+PS C:\&gt; (Get-TierZeroAccount | Where-Object SamAccountName -eq 'alice').Reason
+```</maml:para>
+          <maml:para>&#x80;</maml:para>
+          <maml:para>Lists every reason the alice account was found</maml:para>
+        </maml:introduction>
+        <dev:code />
+        <dev:remarks />
+      </command:example>
+    </command:examples>
+    <command:relatedLinks />
+  </command:command>
+</helpItems>
