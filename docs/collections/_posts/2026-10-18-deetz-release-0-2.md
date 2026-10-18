@@ -1,12 +1,21 @@
 ---
 title: "Deetz Release 0.2"
 date: 2026-10-18 00:00:00
-version: 0.2.0
+version: 0.2.1
 tags:
   - Release Notes
   - Get-TierZeroGroup
   - Get-TierZeroAccount
+  - ConvertTo-PAMAccount
+  - Compare-TierZeroAccount
 ---
+
+## [0.2.1]
+
+### Fixed
+
+- Users and computers from a trusted domain that are members of a Tier Zero group through a foreign security principal are reported as the trusted domain account, with its `ObjectClass`, instead of as the foreign security principal, so `ConvertTo-PAMAccount` includes them. Foreign security principals for trusted domain groups are no longer reported as accounts; the group is reported by `Get-TierZeroGroup` and its members by `Get-TierZeroAccount`. Foreign security principals which cannot be read in the trusted domain are still reported.
+- `Compare-TierZeroAccount` outputs copies of the input accounts instead of adding `InPAM` to them, so comparing the same accounts again no longer changes earlier results.
 
 ## [0.2.0]
 

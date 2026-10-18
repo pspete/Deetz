@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- N/A
+
+## [0.2.1] - 2026-10-18
+
 ### Fixed
 
 - Users and computers from a trusted domain that are members of a Tier Zero group through a foreign security principal are reported as the trusted domain account, with its `ObjectClass`, instead of as the foreign security principal, so `ConvertTo-PAMAccount` includes them. Foreign security principals for trusted domain groups are no longer reported as accounts; the group is reported by `Get-TierZeroGroup` and its members by `Get-TierZeroAccount`. Foreign security principals which cannot be read in the trusted domain are still reported.
