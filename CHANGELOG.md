@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-- N/A
+### Added
+
+- `Get-TierZeroGroup`: lists the Tier Zero groups found by the same discovery as `Get-TierZeroAccount`, with a `Reason` entry for each way the group was found: default group, additional group, nesting in a Tier Zero group, or control by container or object ACL. Groups in a trusted domain reached through a foreign security principal are included.
 
 ## [0.1.0] - 2026-10-17
 

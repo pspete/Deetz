@@ -42,6 +42,7 @@ The Source and TierZeroGroup properties of the account list the distinct values 
 The table view summarises the reasons by source, such as GroupMembership (2), ObjectACL (1).
 Use ConvertTo-TierZeroReport to output one row per account per reason, for CSV export.
 Groups are not listed; their members are.
+Use Get-TierZeroGroup to list the Tier Zero groups.
 
 ## EXAMPLES
 

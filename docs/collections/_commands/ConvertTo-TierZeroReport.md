@@ -8,7 +8,7 @@ schema: 2.0.0
 # ConvertTo-TierZeroReport
 
 ## SYNOPSIS
-Outputs one row per Tier Zero account per reason
+Outputs one row per Tier Zero account or group per reason
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ ConvertTo-TierZeroReport [-InputObject] <PSObject> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Flattens Tier Zero accounts into one row for each reason the account was found, for CSV export or review in a spreadsheet.
+Flattens Tier Zero accounts or groups into one row for each reason the account or group was found, for CSV export or review in a spreadsheet.
 
 Each row holds the properties of the account, with multi-valued properties joined by '; ', followed by the Source, TierZeroGroup, Path, Right, ObjectType and Target of the reason.
 Path is the chain of groups joined by ' > '.
@@ -43,7 +43,7 @@ Writes the Tier Zero accounts, their reasons and whether each is held in CyberAr
 ## PARAMETERS
 
 ### -InputObject
-A Tier Zero account, as output by Get-TierZeroAccount.
+A Tier Zero account or group, as output by Get-TierZeroAccount or Get-TierZeroGroup.
 
 ```yaml
 Type: PSObject

@@ -44,6 +44,44 @@
 			</TableControl>
 		</View>
 		<View>
+			<Name>Deetz.TierZeroGroup</Name>
+			<ViewSelectedBy>
+				<TypeName>Deetz.TierZeroGroup</TypeName>
+			</ViewSelectedBy>
+			<TableControl>
+				<TableHeaders>
+					<TableColumnHeader />
+					<TableColumnHeader />
+					<TableColumnHeader />
+					<TableColumnHeader />
+					<TableColumnHeader>
+						<Label>Reason</Label>
+					</TableColumnHeader>
+				</TableHeaders>
+				<TableRowEntries>
+					<TableRowEntry>
+						<TableColumnItems>
+							<TableColumnItem>
+								<PropertyName>SamAccountName</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Domain</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>MemberCount</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>TierZeroGroup</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<ScriptBlock>($PSItem.Reason | Group-Object -Property Source | ForEach-Object { "$($PSItem.Name) ($($PSItem.Count))" }) -join ', '</ScriptBlock>
+							</TableColumnItem>
+						</TableColumnItems>
+					</TableRowEntry>
+				</TableRowEntries>
+			</TableControl>
+		</View>
+		<View>
 			<Name>Deetz.TierZeroReason</Name>
 			<ViewSelectedBy>
 				<TypeName>Deetz.TierZeroReason</TypeName>

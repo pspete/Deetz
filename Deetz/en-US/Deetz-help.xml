@@ -344,13 +344,13 @@ PS C:\&gt; Get-TierZeroAccount | Compare-TierZeroAccount -PAMAccount (Get-PASAcc
     <command:details>
       <command:name>ConvertTo-TierZeroReport</command:name>
       <maml:description>
-        <maml:para>Outputs one row per Tier Zero account per reason</maml:para>
+        <maml:para>Outputs one row per Tier Zero account or group per reason</maml:para>
       </maml:description>
       <command:verb>ConvertTo</command:verb>
       <command:noun>TierZeroReport</command:noun>
     </command:details>
     <maml:description>
-      <maml:para>Flattens Tier Zero accounts into one row for each reason the account was found, for CSV export or review in a spreadsheet.
+      <maml:para>Flattens Tier Zero accounts or groups into one row for each reason the account or group was found, for CSV export or review in a spreadsheet.
 
 Each row holds the properties of the account, with multi-valued properties joined by '; ', followed by the Source, TierZeroGroup, Path, Right, ObjectType and Target of the reason.
 Path is the chain of groups joined by ' &gt; '.
@@ -374,7 +374,7 @@ Properties added to the account by other commands, such as InPAM from Compare-Ti
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="true (ByValue)" position="0" aliases="none">
         <maml:name>InputObject</maml:name>
         <maml:description>
-          <maml:para>A Tier Zero account, as output by Get-TierZeroAccount.</maml:para>
+          <maml:para>A Tier Zero account or group, as output by Get-TierZeroAccount or Get-TierZeroGroup.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="true">PSObject</command:parameterValue>
         <dev:type>
@@ -468,7 +468,8 @@ Each account is listed once, with a Reason property holding a Deetz.TierZeroReas
 The Source and TierZeroGroup properties of the account list the distinct values of its reasons.
 The table view summarises the reasons by source, such as GroupMembership (2), ObjectACL (1).
 Use ConvertTo-TierZeroReport to output one row per account per reason, for CSV export.
-Groups are not listed; their members are.</maml:para>
+Groups are not listed; their members are.
+Use Get-TierZeroGroup to list the Tier Zero groups.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -644,6 +645,196 @@ PS C:\&gt; (Get-TierZeroAccount | Where-Object SamAccountName -eq 'alice').Reaso
 ```</maml:para>
           <maml:para>&#x80;</maml:para>
           <maml:para>Lists every reason the alice account was found</maml:para>
+        </maml:introduction>
+        <dev:code />
+        <dev:remarks />
+      </command:example>
+    </command:examples>
+    <command:relatedLinks />
+  </command:command>
+  <command:command>
+    <command:details>
+      <command:name>Get-TierZeroGroup</command:name>
+      <maml:description>
+        <maml:para>Lists the Tier Zero groups of an Active Directory domain</maml:para>
+      </maml:description>
+      <command:verb>Get</command:verb>
+      <command:noun>TierZeroGroup</command:noun>
+    </command:details>
+    <maml:description>
+      <maml:para>Lists every group with Tier Zero access to a domain, with the reasons it was found.
+
+Discovery is the same as Get-TierZeroAccount; this command outputs the groups found instead of their member accounts.
+
+Groups are found five ways:
+
+- DefaultGroup: the groups rated Tier Zero by the SpecterOps Tier Zero Table (https://specterops.github.io/TierZeroTable/) which can be identified by SID, in the domain and forest root.
+- AdditionalGroup: groups named by the AdditionalGroup parameter.
+- GroupMembership: groups nested, directly or through other groups, in a Tier Zero group, including groups in a trusted domain added through a foreign security principal.
+- ContainerACL: groups granted control of the domain root, CN=Users, AdminSDHolder, the Domain Controllers OU, or a container holding a Tier Zero account or group.
+- ObjectACL: groups granted control, or ownership, of a Tier Zero account or group object, and groups managing a read-only domain controller.
+
+Default groups are not given ContainerACL or ObjectACL reasons, as they hold rights over most containers by default.
+
+Each group is listed once, with a Reason property holding a Deetz.TierZeroReason object for every way it was found.
+For GroupMembership reasons, Path is the chain of groups from TierZeroGroup down to the group holding this group.
+For ContainerACL and ObjectACL reasons, Right, ObjectType and Target describe the right held; reasons from a group nested in a group holding the right also carry its TierZeroGroup and Path.
+
+MemberCount is the number of direct members in the member attribute; it excludes members holding the group as their primary group.
+Use ConvertTo-TierZeroReport to output one row per group per reason, for CSV export.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-TierZeroGroup</maml:name>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="0" aliases="none">
+          <maml:name>Domain</maml:name>
+          <maml:description />
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+          </dev:type>
+        </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="none">
+          <maml:name>Credential</maml:name>
+          <maml:description />
+          <command:parameterValue required="true" variableLength="false">PSCredential</command:parameterValue>
+          <dev:type>
+            <maml:name>PSCredential</maml:name>
+          </dev:type>
+        </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2" aliases="none">
+          <maml:name>AdditionalGroup</maml:name>
+          <maml:description />
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+          </dev:type>
+        </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named" aliases="none">
+          <maml:name>SkipAclAnalysis</maml:name>
+          <maml:description />
+          <dev:type>
+            <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+          </dev:type>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="2" aliases="none">
+        <maml:name>AdditionalGroup</maml:name>
+        <maml:description>
+          <maml:para>Names of further groups to treat as Tier Zero, such as DnsAdmins or groups which administer Tier Zero systems.
+Accepts any identity Get-ADGroup accepts in the target domain.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="true">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+        </dev:type>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="1" aliases="none">
+        <maml:name>Credential</maml:name>
+        <maml:description>
+          <maml:para>Credential used for all directory queries.
+Defaults to the current user.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="true">PSCredential</command:parameterValue>
+        <dev:type>
+          <maml:name>PSCredential</maml:name>
+        </dev:type>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="0" aliases="none">
+        <maml:name>Domain</maml:name>
+        <maml:description>
+          <maml:para>DNS name of the domain to check.
+Defaults to the domain of the current computer.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="true">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+        </dev:type>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="Named" aliases="none">
+        <maml:name>SkipAclAnalysis</maml:name>
+        <maml:description>
+          <maml:para>Find groups by default, additional and nested group only, without reading container or object security descriptors.</maml:para>
+        </maml:description>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+        </dev:type>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para />
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Deetz.TierZeroGroup</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para />
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>Requires the ActiveDirectory module and read access to the domains of the forest.
+
+The notes of Get-TierZeroAccount on broad principals, inherited entries, Group Policy objects and trusted domains apply.</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>--------- Example 1 ---------</maml:title>
+        <maml:introduction>
+          <maml:para>```
+PS C:\&gt; Get-TierZeroGroup
+```</maml:para>
+          <maml:para>&#x80;</maml:para>
+          <maml:para>Lists the Tier Zero groups of the current domain</maml:para>
+        </maml:introduction>
+        <dev:code />
+        <dev:remarks />
+      </command:example>
+      <command:example>
+        <maml:title>--------- Example 2 ---------</maml:title>
+        <maml:introduction>
+          <maml:para>```
+PS C:\&gt; Get-TierZeroGroup | Where-Object { $PSItem.Source -notcontains 'DefaultGroup' }
+```</maml:para>
+          <maml:para>&#x80;</maml:para>
+          <maml:para>Lists the groups which are Tier Zero through nesting or rights, rather than by default</maml:para>
+        </maml:introduction>
+        <dev:code />
+        <dev:remarks />
+      </command:example>
+      <command:example>
+        <maml:title>--------- Example 3 ---------</maml:title>
+        <maml:introduction>
+          <maml:para>```
+PS C:\&gt; Get-TierZeroGroup | Where-Object { -not $PSItem.AdminCount }
+```</maml:para>
+          <maml:para>&#x80;</maml:para>
+          <maml:para>Lists Tier Zero groups whose adminCount is not set, as they are not protected by AdminSDHolder</maml:para>
+        </maml:introduction>
+        <dev:code />
+        <dev:remarks />
+      </command:example>
+      <command:example>
+        <maml:title>--------- Example 4 ---------</maml:title>
+        <maml:introduction>
+          <maml:para>```
+PS C:\&gt; Get-TierZeroGroup -Domain child.corp.local | ConvertTo-TierZeroReport | Export-Csv -Path .\TierZeroGroups.csv -NoTypeInformation
+```</maml:para>
+          <maml:para>&#x80;</maml:para>
+          <maml:para>Writes the Tier Zero groups of the child.corp.local domain, and every reason each was found, to a CSV file</maml:para>
         </maml:introduction>
         <dev:code />
         <dev:remarks />

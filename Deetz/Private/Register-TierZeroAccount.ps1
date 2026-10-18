@@ -14,7 +14,8 @@ function Register-TierZeroAccount {
 	The account directory object
 
 	.PARAMETER Source
-	How the account was found: GroupMembership, WellKnownAccount, ContainerACL or ObjectACL
+	How the account was found: GroupMembership, WellKnownAccount, ContainerACL or ObjectACL.
+	Groups can also be DefaultGroup or AdditionalGroup.
 
 	.PARAMETER TierZeroGroup
 	The Tier Zero group, or group holding Tier Zero rights, through which the account was found
@@ -52,7 +53,7 @@ function Register-TierZeroAccount {
 		[Parameter(
 			Mandatory = $true
 		)]
-		[ValidateSet('GroupMembership', 'WellKnownAccount', 'ContainerACL', 'ObjectACL')]
+		[ValidateSet('DefaultGroup', 'AdditionalGroup', 'GroupMembership', 'WellKnownAccount', 'ContainerACL', 'ObjectACL')]
 		[string]$Source,
 
 		[Parameter(

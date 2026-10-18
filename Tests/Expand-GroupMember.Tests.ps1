@@ -65,6 +65,7 @@ Describe $($PSCommandPath -Replace '.Tests.ps1') {
 			$Result = Expand-GroupMember -Group $Administrators -Path 'BUILTIN\Administrators' -Forest $TestForest
 			($Result | Where-Object { $PSItem.Object.sAMAccountName -eq 'carol' }).Path | Should -Be @('BUILTIN\Administrators', 'PARTNER\Partner Admins')
 			$Result.Object.ObjectClass | Should -Contain 'foreignSecurityPrincipal'
+			($Result | Where-Object { $PSItem.Object.sAMAccountName -eq 'Partner Admins' }).Path | Should -Be 'BUILTIN\Administrators'
 			Should -Invoke Get-DirectoryObject -ParameterFilter { $Server -eq 'partner.local' -and $LDAPFilter -eq "(objectSid=$PartnerSID-1110)" } -Times 1 -Exactly -Scope It
 		}
 

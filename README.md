@@ -51,9 +51,17 @@ Each account is listed once. Its `Reason` property holds one entry for every way
 (Get-TierZeroAccount | Where-Object SamAccountName -eq 'alice').Reason
 ```
 
+### Discover Tier Zero Groups
+
+`Get-TierZeroGroup` runs the same discovery and lists the groups found instead of their members: default Tier Zero groups (`DefaultGroup`), `-AdditionalGroup` groups (`AdditionalGroup`), groups nested in them (`GroupMembership`), and groups granted control by `ContainerACL` or `ObjectACL`. Default groups are not given ACL reasons, as they hold rights over most containers by default.
+
+```powershell
+Get-TierZeroGroup | Where-Object { $_.Source -notcontains 'DefaultGroup' }
+```
+
 ### Export the Account List
 
-`ConvertTo-TierZeroReport` outputs one row per account per reason:
+`ConvertTo-TierZeroReport` outputs one row per account (or group) per reason:
 
 ```powershell
 Get-TierZeroAccount | ConvertTo-TierZeroReport | Export-Csv -Path .\TierZero.csv -NoTypeInformation
@@ -108,7 +116,8 @@ No password is set; the PAM tool must reconcile or change the password after onb
 | Command                    | Description                                           |
 | -------------------------- | ----------------------------------------------------- |
 | `Get-TierZeroAccount`      | Lists the Tier Zero accounts of an AD domain          |
-| `ConvertTo-TierZeroReport` | Outputs one row per Tier Zero account per reason      |
+| `Get-TierZeroGroup`        | Lists the Tier Zero groups of an AD domain            |
+| `ConvertTo-TierZeroReport` | Outputs one row per Tier Zero account/group per reason |
 | `Compare-TierZeroAccount`  | Marks which Tier Zero accounts are held in a PAM tool |
 | `ConvertTo-PAMAccount`     | Formats Tier Zero accounts for onboarding to PAM      |
 
