@@ -64,7 +64,7 @@ function Compare-TierZeroAccount {
 
 		}
 
-		$InputObject | Add-Member -MemberType NoteProperty -Name InPAM -Value $InPAM -Force -PassThru
+		$InputObject.PSObject.Copy() | Add-Member -MemberType NoteProperty -Name InPAM -Value $InPAM -Force -PassThru
 
 	}
 

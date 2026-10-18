@@ -18,7 +18,7 @@ Compare-TierZeroAccount [-InputObject] <PSObject> [-PAMAccount] <PSObject[]> [[-
 ```
 
 ## DESCRIPTION
-Adds an InPAM property to each Tier Zero account, set to True where a PAM account matches it.
+Outputs a copy of each Tier Zero account with an InPAM property, set to True where a PAM account matches it.
 
 A PAM account matches when its user name and address match the SamAccountName and the DNS or NetBIOS domain name of the Tier Zero account.
 A user name in DOMAIN\user or user@domain form matches on the domain in the user name, whatever the address.
@@ -125,7 +125,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.Management.Automation.PSObject
 ## NOTES
-The input objects are returned with the InPAM property added, replacing any existing InPAM property.
+Each input object is output as a copy with the InPAM property added, replacing any existing InPAM property; the input objects are not changed, so the same accounts can be compared more than once.
 
 The defaults for -UserNameProperty and -AddressProperty match the account objects returned by psPAS.
 
