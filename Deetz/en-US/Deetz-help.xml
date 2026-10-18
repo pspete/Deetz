@@ -584,8 +584,8 @@ Only entries set directly on a Tier Zero account or group object are reported as
 The ACLs of Group Policy objects are not analysed.
 Access control entries scoped to a specific child object type are treated as applying to all objects.
 
-Foreign security principals are listed, translated to DOMAIN\name where the SID resolves.
-Foreign security principals for groups in a trusted domain are expanded in that domain where it can be read.</maml:para>
+Foreign security principals which can be read in their trusted domain are listed as the trusted domain account, and those for groups are expanded in that domain.
+Foreign security principals which cannot be read are listed, translated to DOMAIN\name where the SID resolves.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>

@@ -64,7 +64,7 @@ Describe $($PSCommandPath -Replace '.Tests.ps1') {
 		It 'expands groups from a trusted domain' {
 			$Result = Expand-GroupMember -Group $Administrators -Path 'BUILTIN\Administrators' -Forest $TestForest
 			($Result | Where-Object { $PSItem.Object.sAMAccountName -eq 'carol' }).Path | Should -Be @('BUILTIN\Administrators', 'PARTNER\Partner Admins')
-			$Result.Object.ObjectClass | Should -Contain 'foreignSecurityPrincipal'
+			$Result.Object.ObjectClass | Should -Not -Contain 'foreignSecurityPrincipal'
 			($Result | Where-Object { $PSItem.Object.sAMAccountName -eq 'Partner Admins' }).Path | Should -Be 'BUILTIN\Administrators'
 			Should -Invoke Get-DirectoryObject -ParameterFilter { $Server -eq 'partner.local' -and $LDAPFilter -eq "(objectSid=$PartnerSID-1110)" } -Times 1 -Exactly -Scope It
 		}
@@ -74,13 +74,25 @@ Describe $($PSCommandPath -Replace '.Tests.ps1') {
 			$Result.Object.sAMAccountName | Should -Not -Contain 'carol'
 		}
 
-		It 'does not expand foreign security principals for users' {
+		It 'outputs foreign security principals for users as the trusted domain user' {
 			$Fsp = [pscustomobject]@{ DistinguishedName = "CN=$PartnerSID-1111,$ForeignPrincipals"; ObjectClass = 'foreignSecurityPrincipal'; objectSid = "$PartnerSID-1111" }
 			$Group = [pscustomobject]@{ DistinguishedName = 'CN=G,DC=corp,DC=local'; ObjectClass = 'group'; objectSid = 'S-1-5-32-2003'; 'msDS-PrincipalName' = 'CORP\G'; member = @($Fsp.DistinguishedName) }
 			Mock Get-DirectoryObject -MockWith { if ($Identity) { $Fsp } else { Find-TestDirectoryObject -LDAPFilter $LDAPFilter -Server $Server } }
 			$Result = Expand-GroupMember -Group $Group -Path 'CORP\G' -Forest $TestForest
 			$Result | Should -HaveCount 1
 			$Result.Object.objectSid | Should -Be "$PartnerSID-1111"
+			$Result.Object.ObjectClass | Should -Be 'user'
+			$Result.Object.sAMAccountName | Should -Be 'carol'
+			$Result.Path | Should -Be 'CORP\G'
+		}
+
+		It 'outputs foreign security principals not found in the trusted domain' {
+			$Fsp = [pscustomobject]@{ DistinguishedName = "CN=$PartnerSID-1999,$ForeignPrincipals"; ObjectClass = 'foreignSecurityPrincipal'; objectSid = "$PartnerSID-1999" }
+			$Group = [pscustomobject]@{ DistinguishedName = 'CN=G,DC=corp,DC=local'; ObjectClass = 'group'; objectSid = 'S-1-5-32-2003'; 'msDS-PrincipalName' = 'CORP\G'; member = @($Fsp.DistinguishedName) }
+			Mock Get-DirectoryObject -MockWith { if ($Identity) { $Fsp } else { Find-TestDirectoryObject -LDAPFilter $LDAPFilter -Server $Server } }
+			$Result = Expand-GroupMember -Group $Group -Path 'CORP\G' -Forest $TestForest
+			$Result | Should -HaveCount 1
+			$Result.Object.ObjectClass | Should -Be 'foreignSecurityPrincipal'
 		}
 
 		It 'stops on circular nesting' {

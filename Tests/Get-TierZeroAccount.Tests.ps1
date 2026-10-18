@@ -120,10 +120,8 @@ Describe $($PSCommandPath -Replace '.Tests.ps1') {
 				$Carol.Reason.Path | Should -Be @('BUILTIN\Administrators', 'PARTNER\Partner Admins')
 			}
 
-			It 'reports foreign security principals with their trusted domain' {
-				$Fsp = $Result | Where-Object { $PSItem.SID -eq "$PartnerSID-1110" }
-				$Fsp.ObjectClass | Should -Be 'foreignSecurityPrincipal'
-				$Fsp.Domain | Should -Be 'partner.local'
+			It 'does not report foreign security principals for trusted domain groups as accounts' {
+				$Result | Where-Object { $PSItem.SID -eq "$PartnerSID-1110" } | Should -BeNullOrEmpty
 			}
 
 			It 'finds trusted domain principals with control of a Tier Zero container' {

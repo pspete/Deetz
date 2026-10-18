@@ -8,8 +8,9 @@ function Expand-GroupMember {
 	and the chain of group names, from the outermost group down, through which it is a member.
 	Members which hold the group as their primary group are included for domain groups.
 	Groups already expanded in the same call are not expanded again, so circular nesting terminates.
-	Foreign security principals for groups in a trusted domain are expanded in that domain when Forest is supplied,
-	and the trusted domain group is output after the foreign security principal.
+	When Forest is supplied, foreign security principals found in a trusted domain are output as the trusted domain
+	object, and trusted domain groups are expanded in that domain. Foreign security principals which cannot be found
+	are output as they are.
 
 	.PARAMETER Group
 	The group directory object, with member and objectSid properties
@@ -67,31 +68,31 @@ function Expand-GroupMember {
 
 	foreach ($Member in $Members) {
 
-		[pscustomobject]@{
-			Object = $Member
-			Path   = $Path
-		}
-
 		$NestedGroup = $null
+		$Foreign = $null
 
-		if ($Member.ObjectClass -eq 'group') {
-			$NestedGroup = $Member
-		} elseif ($Member.ObjectClass -eq 'foreignSecurityPrincipal' -and $Forest) {
+		if ($Member.ObjectClass -eq 'foreignSecurityPrincipal' -and $Forest) {
 
 			$MemberSid = "$($Member.objectSid)"
 			$TrustedDomain = Get-SidDomain -SID $MemberSid -Forest $Forest -TrustOnly
 
 			if ($TrustedDomain) {
 				$Foreign = Get-DirectoryObject -LDAPFilter "(objectSid=$MemberSid)" -Server $TrustedDomain.DNSRoot | Select-Object -First 1
-				if ($Foreign.ObjectClass -eq 'group') {
-					$NestedGroup = $Foreign
-					[pscustomobject]@{
-						Object = $Foreign
-						Path   = $Path
-					}
-				}
 			}
 
+			if ($Foreign) {
+				$Member = $Foreign
+			}
+
+		}
+
+		[pscustomobject]@{
+			Object = $Member
+			Path   = $Path
+		}
+
+		if ($Member.ObjectClass -eq 'group') {
+			$NestedGroup = $Member
 		}
 
 		if ($NestedGroup) {
