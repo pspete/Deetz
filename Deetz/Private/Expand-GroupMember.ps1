@@ -8,7 +8,8 @@ function Expand-GroupMember {
 	and the chain of group names, from the outermost group down, through which it is a member.
 	Members which hold the group as their primary group are included for domain groups.
 	Groups already expanded in the same call are not expanded again, so circular nesting terminates.
-	Foreign security principals for groups in a trusted domain are expanded in that domain when Forest is supplied.
+	Foreign security principals for groups in a trusted domain are expanded in that domain when Forest is supplied,
+	and the trusted domain group is output after the foreign security principal.
 
 	.PARAMETER Group
 	The group directory object, with member and objectSid properties
@@ -84,6 +85,10 @@ function Expand-GroupMember {
 				$Foreign = Get-DirectoryObject -LDAPFilter "(objectSid=$MemberSid)" -Server $TrustedDomain.DNSRoot | Select-Object -First 1
 				if ($Foreign.ObjectClass -eq 'group') {
 					$NestedGroup = $Foreign
+					[pscustomobject]@{
+						Object = $Foreign
+						Path   = $Path
+					}
 				}
 			}
 

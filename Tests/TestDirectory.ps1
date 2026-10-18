@@ -58,7 +58,7 @@ $TestDirectory = @(
 	New-TestObject -Name 'Administrators' -Class group -Parent "CN=Builtin,$DomainDN" -Rid 'S-1-5-32-544' -NetBIOS 'BUILTIN' -Member @(
 		"CN=Domain Admins,$Users", "CN=Enterprise Admins,$Users", "CN=Administrator,$Users", "CN=$PartnerSID-1110,$ForeignPrincipals"
 	)
-	New-TestObject -Name 'Domain Admins' -Class group -Parent $Users -Rid 512 -Member @("CN=alice,$Admins", "CN=Administrator,$Users")
+	New-TestObject -Name 'Domain Admins' -Class group -Parent $Users -Rid 512 -Member @("CN=alice,$Admins", "CN=Administrator,$Users", "CN=svc-t0,CN=Managed Service Accounts,$DomainDN")
 	New-TestObject -Name 'Enterprise Admins' -Class group -Parent $Users -Rid 519 -Member @("CN=Administrator,$Users")
 	New-TestObject -Name 'Domain Controllers' -Class group -Parent $Users -Rid 516
 	New-TestObject -Name 'Helpdesk' -Class group -Parent $Admins -Rid 1105 -Member @("CN=bob,OU=Staff,$DomainDN")
@@ -74,6 +74,10 @@ $TestDirectory = @(
 	New-TestObject -Name 'frank' -Class user -Parent "OU=Staff,$DomainDN" -Rid 1111 -PrimaryGroupID 513
 	New-TestObject -Name 'heidi' -Class user -Parent "OU=Staff,$DomainDN" -Rid 1112 -PrimaryGroupID 513
 	New-TestObject -Name 'rodcadmin' -Class user -Parent "OU=Staff,$DomainDN" -Rid 1113 -PrimaryGroupID 513
+	New-TestObject -Name 'svc-t0' -Class msDS-GroupManagedServiceAccount -Parent "CN=Managed Service Accounts,$DomainDN" -Rid 1114 -PrimaryGroupID 515 -UserAccountControl 4096
+	New-TestObject -Name 'Tier0 Hosts' -Class group -Parent "OU=Staff,$DomainDN" -Rid 1115 -Member @("CN=APP01,OU=Staff,$DomainDN")
+	New-TestObject -Name 'APP01' -Class computer -Parent "OU=Staff,$DomainDN" -Rid 1116 -PrimaryGroupID 515 -UserAccountControl 4096
+	New-TestObject -Name 'WEB01' -Class computer -Parent "OU=Staff,$DomainDN" -Rid 1117 -PrimaryGroupID 515 -UserAccountControl 4096
 	New-TestObject -Name "$PartnerSID-1110" -Class foreignSecurityPrincipal -Parent $ForeignPrincipals -Rid "$PartnerSID-1110" -UserAccountControl $null
 	New-TestObject -Name 'Partner Admins' -Class group -Parent "CN=Users,$PartnerDN" -Rid "$PartnerSID-1110" -NetBIOS 'PARTNER' -Member @("CN=carol,CN=Users,$PartnerDN")
 	New-TestObject -Name 'carol' -Class user -Parent "CN=Users,$PartnerDN" -Rid "$PartnerSID-1111" -NetBIOS 'PARTNER' -PrimaryGroupID 513
@@ -123,6 +127,19 @@ $TestAcl = @{
 	"CN=eve,OU=Staff,$DomainDN"   = New-TestSecurityDescriptor -Rule @{ SID = "$DomainSID-1109"; Rights = 'GenericAll' }
 }
 
+#Security descriptor attributes of Tier Zero objects
+$TestAttribute = @{
+	"CN=DC01,OU=Domain Controllers,$DomainDN"         = @{
+		'msDS-AllowedToActOnBehalfOfOtherIdentity' = New-TestSecurityDescriptor -Rule @{ SID = "$DomainSID-1117"; Rights = 'GenericAll' }
+	}
+	"CN=svc-t0,CN=Managed Service Accounts,$DomainDN" = @{
+		'msDS-GroupMSAMembership' = New-TestSecurityDescriptor -Rule @(
+			@{ SID = "$DomainSID-1115"; Rights = 'GenericAll' },
+			@{ SID = "$DomainSID-515"; Rights = 'GenericAll' }
+		)
+	}
+}
+
 #Emulates Get-DirectoryObject against the fake directory
 function Find-TestDirectoryObject {
 	param($Identity, $LDAPFilter, $Properties, $Server)
@@ -130,11 +147,14 @@ function Find-TestDirectoryObject {
 	if ($Properties -contains 'nTSecurityDescriptor') {
 		$SecurityDescriptor = if ($TestAcl.ContainsKey($Identity)) { $TestAcl[$Identity] } else { New-TestSecurityDescriptor }
 		$Object = $TestDirectory | Where-Object { $PSItem.DistinguishedName -eq $Identity }
+		$Attribute = if ($TestAttribute.ContainsKey($Identity)) { $TestAttribute[$Identity] } else { @{} }
 		return [pscustomobject]@{
-			DistinguishedName    = $Identity
-			nTSecurityDescriptor = $SecurityDescriptor
-			managedBy            = $Object.managedBy
-			userAccountControl   = $Object.userAccountControl
+			DistinguishedName                          = $Identity
+			nTSecurityDescriptor                       = $SecurityDescriptor
+			managedBy                                  = $Object.managedBy
+			userAccountControl                         = $Object.userAccountControl
+			'msDS-AllowedToActOnBehalfOfOtherIdentity' = $Attribute['msDS-AllowedToActOnBehalfOfOtherIdentity']
+			'msDS-GroupMSAMembership'                  = $Attribute['msDS-GroupMSAMembership']
 		}
 	}
 
