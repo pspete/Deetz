@@ -87,6 +87,17 @@ Describe $($PSCommandPath -Replace '.Tests.ps1') {
 				$Result.InPAM | Should -Not -Contain $true
 			}
 
+			It 'does not change the input objects' {
+				$Account = [pscustomobject]@{ SamAccountName = 'alice'; Domain = 'corp.local'; NetBIOSDomain = 'CORP'; UserPrincipalName = 'alice@corp.local' }
+				$Account.PSObject.TypeNames.Insert(0, 'Deetz.TierZeroAccount')
+				$Before = $Account | Compare-TierZeroAccount -PAMAccount @()
+				$After = $Account | Compare-TierZeroAccount -PAMAccount @([pscustomobject]@{ userName = 'alice'; address = 'corp.local' })
+				$Before.InPAM | Should -BeFalse
+				$After.InPAM | Should -BeTrue
+				$Account.PSObject.Properties.Name | Should -Not -Contain 'InPAM'
+				$After.PSObject.TypeNames[0] | Should -Be 'Deetz.TierZeroAccount'
+			}
+
 		}
 
 	}

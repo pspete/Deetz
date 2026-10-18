@@ -10,7 +10,7 @@
       <command:noun>TierZeroAccount</command:noun>
     </command:details>
     <maml:description>
-      <maml:para>Adds an InPAM property to each Tier Zero account, set to True where a PAM account matches it.
+      <maml:para>Outputs a copy of each Tier Zero account with an InPAM property, set to True where a PAM account matches it.
 
 A PAM account matches when its user name and address match the SamAccountName and the DNS or NetBIOS domain name of the Tier Zero account.
 A user name in DOMAIN\user or user@domain form matches on the domain in the user name, whatever the address.
@@ -121,7 +121,7 @@ An empty list marks every account as not held.</maml:para>
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>The input objects are returned with the InPAM property added, replacing any existing InPAM property.
+        <maml:para>Each input object is output as a copy with the InPAM property added, replacing any existing InPAM property; the input objects are not changed, so the same accounts can be compared more than once.
 
 The defaults for -UserNameProperty and -AddressProperty match the account objects returned by psPAS.</maml:para>
       </maml:alert>
