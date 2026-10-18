@@ -28,7 +28,7 @@ Groups are found five ways:
 - AdditionalGroup: groups named by the AdditionalGroup parameter.
 - GroupMembership: groups nested, directly or through other groups, in a Tier Zero group, including groups in a trusted domain added through a foreign security principal.
 - ContainerACL: groups granted control of the domain root, CN=Users, AdminSDHolder, the Domain Controllers OU, or a container holding a Tier Zero account or group.
-- ObjectACL: groups granted control, or ownership, of a Tier Zero account or group object, and groups managing a read-only domain controller.
+- ObjectACL: groups granted control, or ownership, of a Tier Zero account or group object, groups managing a read-only domain controller, groups allowed to delegate to a Tier Zero computer, and groups allowed to retrieve the password of a Tier Zero group managed service account.
 
 Default groups are not given ContainerACL or ObjectACL reasons, as they hold rights over most containers by default.
 

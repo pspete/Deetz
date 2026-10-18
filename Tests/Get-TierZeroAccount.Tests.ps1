@@ -165,6 +165,26 @@ Describe $($PSCommandPath -Replace '.Tests.ps1') {
 				$Manager.Reason.Target | Should -Be 'CN=RODC01,OU=Domain Controllers,DC=corp,DC=local'
 			}
 
+			It 'finds principals allowed to delegate to a Tier Zero computer' {
+				$Web = $Result | Where-Object { $PSItem.SamAccountName -eq 'WEB01' }
+				$Web.Source | Should -Be 'ObjectACL'
+				$Web.Reason.Right | Should -Be 'AllowedToAct'
+				$Web.Reason.ObjectType | Should -BeNullOrEmpty
+				$Web.Reason.Target | Should -Be 'CN=DC01,OU=Domain Controllers,DC=corp,DC=local'
+			}
+
+			It 'finds members of groups allowed to retrieve the password of a Tier Zero gMSA' {
+				$App = $Result | Where-Object { $PSItem.SamAccountName -eq 'APP01' }
+				$App.Source | Should -Be 'ObjectACL'
+				$App.TierZeroGroup | Should -Be 'CORP\Tier0 Hosts'
+				$App.Reason.Right | Should -Be 'ReadGMSAPassword'
+				$App.Reason.Target | Should -Be 'CN=svc-t0,CN=Managed Service Accounts,DC=corp,DC=local'
+			}
+
+			It 'warns about broad principals allowed to retrieve the password of a Tier Zero gMSA' {
+				$Warnings.Message | Should -Contain 'Broad principal S-1-5-21-1-2-3-515 has ReadGMSAPassword on CN=svc-t0,CN=Managed Service Accounts,DC=corp,DC=local'
+			}
+
 			It 'ignores inherited entries on Tier Zero objects' {
 				$Result.SamAccountName | Should -Not -Contain 'heidi'
 			}

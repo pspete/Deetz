@@ -41,7 +41,7 @@ Accounts are found by:
 - **GroupMembership**: direct, nested and primary group members of the groups the [Tier Zero Table](https://specterops.github.io/TierZeroTable/) rates Tier Zero, in the domain and forest root, plus any `-AdditionalGroup`.
 - **WellKnownAccount**: the built-in Administrator and krbtgt accounts, and read-only domain controller computer accounts.
 - **ContainerACL**: following the Tier Zero Table's control principle, principals with control of the domain root, `CN=Users`, `AdminSDHolder`, the `Domain Controllers` OU, and every container holding a Tier Zero account or group.
-- **ObjectACL**: principals with control, or ownership, of a Tier Zero account or group object, and managers of read-only domain controllers. Principals found by ACL are checked in turn until nothing new is found.
+- **ObjectACL**: principals with control, or ownership, of a Tier Zero account or group object, managers of read-only domain controllers, principals allowed to delegate to a Tier Zero computer (resource-based constrained delegation), and principals allowed to retrieve the password of a Tier Zero group managed service account. Principals found by ACL are checked in turn until nothing new is found.
 
 Use `-SkipAclAnalysis` for group membership and well known accounts only.
 

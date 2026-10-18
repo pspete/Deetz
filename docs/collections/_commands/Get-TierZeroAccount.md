@@ -26,7 +26,7 @@ Accounts are found three ways:
 The default groups are those rated Tier Zero by the SpecterOps Tier Zero Table (https://specterops.github.io/TierZeroTable/) which can be identified by SID: Administrators, Account Operators, Server Operators, Print Operators, Backup Operators, Incoming Forest Trust Builders, Performance Log Users, Distributed COM Users, Cryptographic Operators, Domain Admins, Domain Controllers, Cert Publishers, Key Admins, plus the forest root groups Enterprise Admins, Schema Admins and Enterprise Key Admins.
 - WellKnownAccount: the built-in Administrator account, the krbtgt accounts, and read-only domain controller computer accounts.
 - ContainerACL: principals granted control (GenericAll, GenericWrite, WriteDacl, WriteOwner, or a write or extended right which allows takeover) of the domain root, CN=Users, AdminSDHolder, the Domain Controllers OU, and every container holding a Tier Zero account or group.
-- ObjectACL: principals granted the same control of a Tier Zero account or group object itself, by an entry set on the object or by owning it, and the managedBy principal of a read-only domain controller.
+- ObjectACL: principals granted the same control of a Tier Zero account or group object itself, by an entry set on the object or by owning it, the managedBy principal of a read-only domain controller, principals listed in msDS-AllowedToActOnBehalfOfOtherIdentity (resource-based constrained delegation) of a Tier Zero object, and principals listed in msDS-GroupMSAMembership of a Tier Zero group managed service account.
 Owners are treated as having full control, as an owner can always change the permissions.
 Groups found by ContainerACL or ObjectACL are expanded, and the accounts and groups found are checked in turn until no new principal is found.
 
@@ -35,7 +35,7 @@ Each account is listed once, with a Reason property holding a Deetz.TierZeroReas
 - Source: GroupMembership, WellKnownAccount, ContainerACL or ObjectACL.
 - TierZeroGroup: the Tier Zero group, or the group granted a right, through which the account was found.
 - Path: the chain of groups from TierZeroGroup down to the group holding the account.
-- Right and ObjectType: the right held, such as GenericAll (All), WriteProperty (member), Owner (All) or managedBy.
+- Right and ObjectType: the right held, such as GenericAll (All), WriteProperty (member), Owner (All), managedBy, AllowedToAct or ReadGMSAPassword.
 - Target: the container or object the right is held over.
 
 The Source and TierZeroGroup properties of the account list the distinct values of its reasons.

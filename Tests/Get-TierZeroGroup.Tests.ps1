@@ -70,7 +70,7 @@ Describe $($PSCommandPath -Replace '.Tests.ps1') {
 				$Group = $Result | Where-Object { $PSItem.SamAccountName -eq 'Domain Admins' }
 				$Group.Source | Should -Be @('DefaultGroup', 'GroupMembership')
 				($Group.Reason | Where-Object { $PSItem.Source -eq 'GroupMembership' }).Path | Should -Be 'BUILTIN\Administrators'
-				$Group.MemberCount | Should -Be 2
+				$Group.MemberCount | Should -Be 3
 			}
 
 			It 'does not record ACL reasons for default groups' {
@@ -97,6 +97,12 @@ Describe $($PSCommandPath -Replace '.Tests.ps1') {
 				$Group.Source | Should -Be 'ObjectACL'
 				$Group.Reason.ObjectType | Should -Be 'member'
 				$Group.Reason.Target | Should -Be 'CN=Domain Admins,CN=Users,DC=corp,DC=local'
+			}
+
+			It 'outputs groups allowed to retrieve the password of a Tier Zero gMSA' {
+				$Group = $Result | Where-Object { $PSItem.SamAccountName -eq 'Tier0 Hosts' }
+				$Group.Source | Should -Be 'ObjectACL'
+				$Group.Reason.Right | Should -Be 'ReadGMSAPassword'
 			}
 
 			It 'does not output accounts' {

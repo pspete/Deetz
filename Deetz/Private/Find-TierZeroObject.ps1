@@ -161,17 +161,70 @@ function Find-TierZeroObject {
 
 		}
 
+		$AddSid = {
+			param($SID, $Source, $Grant)
+
+			$Right = $Grant.Right
+			if ($Grant.ObjectType) {
+				$Right = "$Right ($($Grant.ObjectType))"
+			}
+
+			if ($SID -match '^(S-1-1-0|S-1-5-7|S-1-5-11|S-1-5-21-.+-(513|515)|S-1-5-32-(545|546|554))$') {
+				$Principal = $SID
+				try {
+					$Principal = "$(([System.Security.Principal.SecurityIdentifier]$SID).Translate([System.Security.Principal.NTAccount]).Value) ($SID)"
+				} catch {
+					Write-Verbose "Unable to translate $SID"
+				}
+				Write-Warning "Broad principal $Principal has $Right on $($Grant.Target)"
+				return
+			}
+
+			if ($SID -match '^S-1-5-32-') {
+				$Server = Get-DomainName -DistinguishedName $Grant.Target
+			} elseif ($SID -match '^S-1-5-21-') {
+				$Server = (Get-SidDomain -SID $SID -Forest $Forest).DNSRoot
+			} else {
+				return
+			}
+
+			if (-not $Server) {
+				Write-Verbose "No reachable domain for $SID on $($Grant.Target)"
+				return
+			}
+
+			$Principal = Get-DirectoryObject -LDAPFilter "(objectSid=$SID)" -Server $Server | Select-Object -First 1
+
+			& $AddPrincipal $Principal $Source $Grant
+
+		}
+
 		$CheckAcl = {
 			param($Target, $Source)
 
 			Write-Verbose "Checking ACL: $Target"
 
-			$TargetObject = Get-DirectoryObject -Identity $Target -Properties nTSecurityDescriptor, managedBy, userAccountControl | Select-Object -First 1
+			$Properties = 'nTSecurityDescriptor', 'managedBy', 'userAccountControl', 'msDS-AllowedToActOnBehalfOfOtherIdentity', 'msDS-GroupMSAMembership'
+			$TargetObject = Get-DirectoryObject -Identity $Target -Properties $Properties | Select-Object -First 1
 
 			#The managedBy principal of a read-only domain controller is a local administrator of it
 			if ($TargetObject.managedBy -and ($TargetObject.userAccountControl -band 67108864)) {
 				$Manager = Get-DirectoryObject -Identity $TargetObject.managedBy | Select-Object -First 1
 				& $AddPrincipal $Manager $Source @{ Right = 'managedBy'; Target = $Target }
+			}
+
+			#Principals allowed to delegate to the object can impersonate any user to it
+			if ($TargetObject.'msDS-AllowedToActOnBehalfOfOtherIdentity') {
+				foreach ($SID in (Get-AllowedPrincipal -SecurityDescriptor $TargetObject.'msDS-AllowedToActOnBehalfOfOtherIdentity')) {
+					& $AddSid $SID $Source @{ Right = 'AllowedToAct'; Target = $Target }
+				}
+			}
+
+			#Principals allowed to retrieve the password of a group managed service account control it
+			if ($TargetObject.'msDS-GroupMSAMembership') {
+				foreach ($SID in (Get-AllowedPrincipal -SecurityDescriptor $TargetObject.'msDS-GroupMSAMembership')) {
+					& $AddSid $SID $Source @{ Right = 'ReadGMSAPassword'; Target = $Target }
+				}
 			}
 
 			if (-not $TargetObject.nTSecurityDescriptor) {
@@ -187,35 +240,7 @@ function Find-TierZeroObject {
 			}
 
 			foreach ($Ace in (Get-PrivilegedAce @AceParameter)) {
-
-				if ($Ace.SID -match '^(S-1-1-0|S-1-5-7|S-1-5-11|S-1-5-21-.+-(513|515)|S-1-5-32-(545|546|554))$') {
-					$Principal = $Ace.SID
-					try {
-						$Principal = "$(([System.Security.Principal.SecurityIdentifier]$Ace.SID).Translate([System.Security.Principal.NTAccount]).Value) ($($Ace.SID))"
-					} catch {
-						Write-Verbose "Unable to translate $($Ace.SID)"
-					}
-					Write-Warning "Broad principal $Principal has $($Ace.Rights) ($($Ace.ObjectType)) on $Target"
-					continue
-				}
-
-				if ($Ace.SID -match '^S-1-5-32-') {
-					$Server = Get-DomainName -DistinguishedName $Target
-				} elseif ($Ace.SID -match '^S-1-5-21-') {
-					$Server = (Get-SidDomain -SID $Ace.SID -Forest $Forest).DNSRoot
-				} else {
-					continue
-				}
-
-				if (-not $Server) {
-					Write-Verbose "No reachable domain for $($Ace.SID) on $Target"
-					continue
-				}
-
-				$Principal = Get-DirectoryObject -LDAPFilter "(objectSid=$($Ace.SID))" -Server $Server | Select-Object -First 1
-
-				& $AddPrincipal $Principal $Source @{ Right = $Ace.Rights; ObjectType = $Ace.ObjectType; Target = $Target }
-
+				& $AddSid $Ace.SID $Source @{ Right = $Ace.Rights; ObjectType = $Ace.ObjectType; Target = $Target }
 			}
 
 		}
